@@ -29,7 +29,7 @@ Date created: April 2017
 import sys
 sys.path.append('..')
 
-from window import WindowDMD
+import dmdtools
 import numpy as np
 from scipy.integrate import odeint
 import time
@@ -87,7 +87,7 @@ print "Mini-batch DMD, time = " + str(end-start) + " secs"
 # Window DMD, w = 20
 w = 20
 evalswindowDMD = np.empty((n,m),dtype=complex)
-wdmd = WindowDMD(n,w)
+wdmd = dmdtools.WindowDMD(n,w)
 wdmd.initialize(x[:,:w],y[:,:w])
 start = time.clock()
 for k in range(w,m):

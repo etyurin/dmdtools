@@ -36,9 +36,12 @@ class WindowDMD:
         update(x,y), update DMD computation when new snapshot pair (x,y) becomes available
         computemodes(), compute and return DMD eigenvalues and DMD modes
         
-    Authors: 
+    Authors:
         Hao Zhang
         Clarence W. Rowley
+        
+    References:
+        To be added.
     
     Date created: April 2017
     

@@ -22,11 +22,11 @@ by efficient rank-2 updating window DMD algroithm.
 The time complexity (for one iteration) is O(n^2), and space complexity is 
 O(n^2), where n is the state dimension.
 
-## Implementation
+## Implementation in folder **/dmdtools**
 1.**online.py** implements **OnlineDMD** class in Python.  
 2.**window.py** implements **WindowDMD** class in Python.
 
-## Demos
+## Demos in folder **/scripts**
 1.**online_demo.py** demos the use of Python **OnlineDMD** class.  
 2.**window_demo.py** demos the use of Python **WindowDMD** class.
 

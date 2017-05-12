@@ -21,7 +21,12 @@ approach in terms of tracking time varying eigenvalues, by comparison with the a
 Authors: 
     Hao Zhang
     Clarence W. Rowley
-    
+
+References:
+    Hao Zhang, Clarence W. Rowley, Eric A. Deem, and Louis N. Cattafesta,
+    ``Fast Quadratic Time Methods for Online Dynamic Mode Decomposition", 
+    in production, 2017.  The paper will be available on arXiv soon.
+            
 Date created: April 2017
 """
 

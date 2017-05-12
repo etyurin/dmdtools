@@ -38,6 +38,11 @@
 %   Hao Zhang
 %   Clarence W. Rowley
 % 
+% Reference:
+% Hao Zhang, Clarence W. Rowley, Eric A. Deem, and Louis N. Cattafesta,
+% ``Fast Quadratic Time Methods for Online Dynamic Mode Decomposition", 
+% in production, 2017. The paper will be available on arXiv soon.
+% 
 % Created:
 %   April 2017.
 %

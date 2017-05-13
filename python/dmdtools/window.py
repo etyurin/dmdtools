@@ -43,7 +43,7 @@ class WindowDMD:
     References:
         Hao Zhang, Clarence W. Rowley, Eric A. Deem, and Louis N. Cattafesta,
         ``Fast Quadratic Time Methods for Online Dynamic Mode Decomposition", 
-        in production, 2017.  The paper will be available on arXiv soon.
+        in production, 2017. To be submitted for publication, available on arXiv.
     
     Date created: April 2017
     

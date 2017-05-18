@@ -74,11 +74,9 @@ classdef OnlineDMD < handle
             % Usage: odmd.initialize(Xq,Yq)
             q = length(Xq(1,:));
             if(obj.timestep == 0 && q>=obj.n)
-                sqrtlambda = sqrt(obj.lambda);
-                for i = 1:q
-                    Xq(:,i) = Xq(:,i)*sqrtlambda^(q-i);
-                    Yq(:,i) = Yq(:,i)*sqrtlambda^(q-i);
-                end
+                weight = (sqrt(obj.lambda)).^(q-1:-1:0);
+                Xq = Xq.*weight;
+                Yq = Yq.*weight;
                 obj.A = Yq*pinv(Xq);
                 obj.P = inv(Xq*Xq')/obj.lambda;
             end
@@ -100,13 +98,15 @@ classdef OnlineDMD < handle
             % should be measurements correponding to consecutive states z(k-1) and z(k).
             % Usage: odmd.update(x, y)
             
+            % # compute P*x matrix vector product beforehand
+            Px = obj.P*x;
             % Compute gamma
-            gamma = 1/(1+x'*(obj.P*x));
+            gamma = 1/(1+x'*Px);
             % Update A
-            obj.A = obj.A + gamma*((y-obj.A*x)*(x'*obj.P));
+            obj.A = obj.A + gamma*((y-obj.A*x)*Px');
             % Update P
-            obj.P = (obj.P - gamma*((obj.P*x)*(x'*obj.P)))/obj.lambda;
-            
+            obj.P = (obj.P - gamma*(Px*Px'))/obj.lambda;
+            % time step + 1
             obj.timestep = obj.timestep + 1;
         end
         

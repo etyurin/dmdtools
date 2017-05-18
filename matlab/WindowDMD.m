@@ -92,20 +92,25 @@ classdef WindowDMD < handle
             % xold = x(k-w+2), yold = y(k-w+2), xnew = x(k+1), ynew = y(k+1)
             % Usage: wdmd.update(xold, yold, xnew, ynew)
             
+            % compute M*xnew matrix vector product beforehand
+            Mxnew = obj.M*xnew;
             % Compute gamma
-            gamma = 1/(1+xnew'*(obj.M*xnew));
+            gamma = 1/(1+xnew'*(Mxnew));
             % Compute Pk+1
-            Pk1 = obj.M - gamma*((obj.M*xnew)*(xnew'*obj.M));
+            Pk1 = obj.M - gamma*(Mxnew*Mxnew');
+            % compute P(k+1)*xold matrix vector product beforehand
+            Pk1xold = Pk1*xold;
             % Compute beta
-            beta = 1/(1-xold'*(Pk1*xold));
+            beta = 1/(1-xold'*(Pk1xold));
 
             % Update A
-            obj.A = obj.B + gamma*((ynew-obj.B*xnew)*(xnew'*obj.M));
+            obj.A = obj.B + gamma*((ynew-obj.B*xnew)*Mxnew');
             % Update B
-            obj.B = obj.A + beta*((-yold+obj.A*xold)*(xold'*Pk1));
+            obj.B = obj.A + beta*((-yold+obj.A*xold)*Pk1xold');
             % Update M
-            obj.M = Pk1 + beta*((Pk1*xold)*(xold'*Pk1));
+            obj.M = Pk1 + beta*(Pk1xold*Pk1xold');
             
+            % time step + 1
             obj.timestep = obj.timestep + 1;
         end
         

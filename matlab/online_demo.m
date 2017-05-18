@@ -113,10 +113,10 @@ plot(t,imag(evals(1,:)),'k-','LineWidth',3)
 plot(t(updateindex),imag(evalsbatchDMD(1,updateindex)),'-','LineWidth',3)
 plot(t(updateindex),imag(evalsonlineDMD1(1,updateindex)),'--','LineWidth',3)
 plot(t(updateindex),imag(evalsonlineDMD09(1,updateindex)),'-','LineWidth',3)
-xlabel('Time','Interpreter','latex'), ylabel('Im')
+xlabel('Time','Interpreter','latex'), ylabel('Im','Interpreter','latex')
 title('Imaginary part of eigenvalues','Interpreter','latex')
 fl = legend('True','batch','online, $\lambda=1$','online, $\lambda=0.9$');
 set(fl,'Interpreter','latex','Location','northwest');
 ylim([1,2]), xlim([0,10])
 box on
-set(gca,'FontSize',18,'LineWidth',2)
+set(gca,'FontSize',20,'LineWidth',2)

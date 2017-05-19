@@ -28,8 +28,7 @@ class WindowDMD:
         windowsize: window size
         timestep: number of snapshot pairs processed (i.e., the current time step)
         A: DMD matrix, size n by n
-        B: Intermediate DMD matrix for w-1 snapshot pairs, size n by n
-        M: Matrix that contains information about recent w-1 snapshots, size n by n
+        P: Matrix that contains information about recent w snapshots, size n by n
 
     methods:
         initialize(Xq, Yq), initialize window DMD algorithm
@@ -50,7 +49,7 @@ class WindowDMD:
     To import the WindowDMD class, add import window at head of Python scripts.
     To look up this documentation, type help(window.WindowDMD) or window.WindowDMD?
     """
-    def __init__(self, n=0, windowsize=0, timestep=0, A=None, B=None, M=None):
+    def __init__(self, n=0, windowsize=0, timestep=0, A=None, P=None):
         """
         Creat an object for window DMD
         Usage: wdmd = WindowDMD(n,windowsize)
@@ -58,14 +57,12 @@ class WindowDMD:
         self.n = n
         self.windowsize = windowsize
         self.timestep = timestep
-        if A is None or B is None or M is None:
+        if A is None or P is None:
             self.A = np.zeros([n,n])
-            self.B = np.zeros([n,n])
-            self.M = np.zeros([n,n])
+            self.P = np.zeros([n,n])
         else:
             self.A = A
-            self.B = B
-            self.M = M
+            self.P = P
 
     def initialize(self, Xq, Yq):
         """Initialize window DMD with first q snapshot pairs stored in (Xq, Yq)
@@ -74,37 +71,36 @@ class WindowDMD:
         q = len(Xq[0,:])
         if self.timestep == 0 and self.windowsize == q and self.windowsize >= self.n + 1:
             self.A = Yq.dot(np.linalg.pinv(Xq))
-            self.B = Yq[:,:q-1].dot(np.linalg.pinv(Xq[:,:q-1]))
-            self.M = np.linalg.inv(Xq[:,:q-1].dot(Xq[:,:q-1].T))
+            self.P = np.linalg.inv(Xq.dot(Xq.T))
             self.timestep += q
         
     def update(self, xold, yold, xnew, ynew):
         """Update the DMD computation by sliding the finite time window forward
-        Forget the oldest pair of snapshots (xold, yold), and includes the newest 
+        Forget the oldest pair of snapshots (xold, yold), and remembers the newest 
         pair of snapshots (xnew, ynew) in the new time window. If the new finite 
         time window at time step k+1 includes recent w snapshot pairs as
         X(k+1) = [x(k-w+2),x(k-w+3),...,x(k+1)], Y(k+1) = [y(k-w+2),y(k-w+3),...,y(k+1)], 
         where y(k) = f(x(k)) and f is the dynamics, then we should take
-        xold = x(k-w+2), yold = y(k-w+2), xnew = x(k+1), ynew = y(k+1)
+        xold = x(k-w+1), yold = y(k-w+1), xnew = x(k+1), ynew = y(k+1)
         Usage: wdmd.update(xold, yold, xnew, ynew)
         """
-        # compute gamma
-        # compute M*xnew matrix vector product beforehand
-        Mxnew = self.M.dot(xnew)
-        gamma = 1.0/(1+xnew.T.dot(Mxnew))
-        # compute Pk+1
-        Pk1 = self.M - gamma*np.outer(Mxnew, Mxnew)
+        # compute Pkxold matrix vector product beforehand
+        Pkxold = self.P.dot(xold)
         # compute beta
-        # compute P(k+1)*xold matrix vector product beforehand
-        Pk1xold = Pk1.dot(xold)
-        beta = 1.0/(1-xold.T.dot(Pk1xold))
+        beta = 1.0/(1-xold.T.dot(Pkxold))
+        # compute Ako
+        Ako = self.A + np.outer(beta*(-yold+self.A.dot(xold)),Pkxold)
+        # compute Pko
+        Pko = self.P + np.outer(beta*Pkxold, Pkxold)
         
-        # update A
-        self.A = self.B + gamma*np.outer(ynew - self.B.dot(xnew), Mxnew)
-        # update B
-        self.B = self.A + beta*np.outer(-yold + self.A.dot(xold), Pk1xold)
-        # update M
-        self.M = Pk1 + beta*np.outer(Pk1xold, Pk1xold)
+        # compute Pko*xnew matrix vector product beforehand
+        Pkoxnew = Pko.dot(xnew)
+        # compute gamma
+        gamma = 1.0/(1+xnew.T.dot(Pkoxnew))
+        # update Ak
+        self.A = Ako + np.outer(gamma*(ynew-Ako.dot(xnew)),Pkoxnew)
+        # update Pk
+        self.P = Pko - np.outer(gamma*Pkoxnew, Pkoxnew)
         
         # time step + 1
         self.timestep += 1

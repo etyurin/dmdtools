@@ -109,10 +109,10 @@ fprintf('Online DMD, lambda = 0.9, elapsed time: %f seconds\n', elapsed_time)
 % from true, batch, online (lambda=1), and online (lambda=0.9)
 updateindex = q+1:m;
 figure, hold on
-plot(t,imag(evals(1,:)),'k-','LineWidth',3)
-plot(t(updateindex),imag(evalsbatchDMD(1,updateindex)),'-','LineWidth',3)
-plot(t(updateindex),imag(evalsonlineDMD1(1,updateindex)),'--','LineWidth',3)
-plot(t(updateindex),imag(evalsonlineDMD09(1,updateindex)),'-','LineWidth',3)
+plot(t,imag(evals(1,:)),'k-','LineWidth',2)
+plot(t(updateindex),imag(evalsbatchDMD(1,updateindex)),'-','LineWidth',2)
+plot(t(updateindex),imag(evalsonlineDMD1(1,updateindex)),'--','LineWidth',2)
+plot(t(updateindex),imag(evalsonlineDMD09(1,updateindex)),'-','LineWidth',2)
 xlabel('Time','Interpreter','latex'), ylabel('Im','Interpreter','latex')
 title('Imaginary part of eigenvalues','Interpreter','latex')
 fl = legend('True','batch','online, $\lambda=1$','online, $\lambda=0.9$');

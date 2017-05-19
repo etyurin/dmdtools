@@ -100,9 +100,9 @@ class OnlineDMD:
         # compute gamma
         gamma = 1.0/(1 + x.T.dot(Px))
         # update A
-        self.A += gamma*np.outer(y-self.A.dot(x),Px)
+        self.A += np.outer(y-self.A.dot(x),gamma*Px)
         # update P
-        self.P = (self.P - gamma*np.outer(Px,Px))/self.forgetting
+        self.P = (self.P - np.outer(gamma*Px,Px))/self.forgetting
         # time step + 1
         self.timestep += 1
 

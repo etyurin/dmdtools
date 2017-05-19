@@ -96,10 +96,10 @@ wdmd = dmdtools.WindowDMD(n,w)
 wdmd.initialize(x[:,:w],y[:,:w])
 start = time.clock()
 for k in range(w,m):
-    wdmd.update(x[:,k-w+1],y[:,k-w+1],x[:,k],y[:,k])
+    wdmd.update(x[:,k-w],y[:,k-w],x[:,k],y[:,k])
     evalswindowDMD[:,k] = np.log(np.linalg.eigvals(wdmd.A))/dt
 end = time.clock()
-print "Window DMD, forgetting = 1, time = " + str(end-start) + " secs"
+print "Window DMD, time = " + str(end-start) + " secs"
 
 
 # visualize true, batch, window (forgettting=1,0.9)

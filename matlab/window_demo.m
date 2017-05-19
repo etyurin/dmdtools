@@ -85,7 +85,7 @@ wdmd.initialize(x(:,1:w), y(:,1:w));
 % window DMD
 tic
 for k = w+1:m
-    wdmd.update(x(:,k-w+1), y(:,k-w+1), x(:,k), y(:,k));
+    wdmd.update(x(:,k-w), y(:,k-w), x(:,k), y(:,k));
     evalswindowDMD(:,k) = log(eig(wdmd.A))/dt;
 end
 elapsed_time = toc;
@@ -96,9 +96,9 @@ fprintf('Window DMD, elapsed time: %f seconds\n', elapsed_time)
 % from true, mini-batch, and window
 updateindex = w+1:m;
 figure, hold on
-plot(t,imag(evals(1,:)),'k-','LineWidth',3)
-plot(t(updateindex),imag(evalsminibatchDMD(1,updateindex)),'-','LineWidth',3)
-plot(t(updateindex),imag(evalswindowDMD(1,updateindex)),'--','LineWidth',3)
+plot(t,imag(evals(1,:)),'k-','LineWidth',2)
+plot(t(updateindex),imag(evalsminibatchDMD(1,updateindex)),'-','LineWidth',2)
+plot(t(updateindex),imag(evalswindowDMD(1,updateindex)),'--','LineWidth',2)
 xlabel('Time','Interpreter','latex'), ylabel('Im','Interpreter','latex')
 title('Imaginary part of eigenvalues','Interpreter','latex')
 fl = legend('True','mini-batch','window');

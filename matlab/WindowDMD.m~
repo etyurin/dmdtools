@@ -30,8 +30,6 @@
 %       initialize(Xq, Yq), initialize window DMD algorithm
 %       update(xold, yold, xnew, ynew), update by forgetting old snapshot pairs, 
 %       and remeber new snapshot pair
-%       At time k+1, if X(k+1) = [x(k-w+2),x(k-w+2),...,x(k+1)], Y(k+1) = [y(k-w+2),y(k-w+2),...,y(k+1)], 
-%       we should take xold = x(k-w+1), yold = y(k-w+1), xnew = x(k+1), ynew = y(k+1)
 %       computemodes(), compute and return DMD eigenvalues and DMD mdoes
 %
 % Authors: 
@@ -92,22 +90,30 @@ classdef WindowDMD < handle
             % Usage: wdmd.update(xold, yold, xnew, ynew)
             
             % compute Pk*xold matrix vector product beforehand
-            Pkxold = obj.P*xold;
+            Pxold = obj.P*xold;
             % compute beta
             beta = 1/(1-xold'*Pkxold);
-            % compute Ako
-            Ako = obj.A + (beta*(-yold+obj.A*xold))*Pkxold';
             % compute Pko
             Pko = obj.P + (beta*Pkxold)*Pkxold';
             
-            % compute Pko*xnew matrix vector product beforehand
-            Pkoxnew = Pko*xnew;
-            % compute gamma
-            gamma = 1/(1+xnew'*Pkoxnew);
-            % update A
-            obj.A = Ako + (gamma*(ynew - Ako*xnew))*Pkoxnew';
-            % update P
-            obj.P = Pko - (gamma*Pkoxnew)*Pkoxnew';
+            
+            % compute M*xnew matrix vector product beforehand
+            Mxnew = obj.M*xnew;
+            % Compute gamma
+            gamma = 1/(1+xnew'*(Mxnew));
+            % Compute Pk+1
+            Pk1 = obj.M - gamma*(Mxnew*Mxnew');
+            % compute P(k+1)*xold matrix vector product beforehand
+            Pk1xold = Pk1*xold;
+            % Compute beta
+            beta = 1/(1-xold'*(Pk1xold));
+
+            % Update A
+            obj.A = obj.B + gamma*((ynew-obj.B*xnew)*Mxnew');
+            % Update B
+            obj.B = obj.A + beta*((-yold+obj.A*xold)*Pk1xold');
+            % Update M
+            obj.M = Pk1 + beta*(Pk1xold*Pk1xold');
             
             % time step + 1
             obj.timestep = obj.timestep + 1;

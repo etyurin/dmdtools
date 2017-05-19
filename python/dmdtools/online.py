@@ -16,7 +16,7 @@ class OnlineDMD:
         by efficient rank-1 updating online DMD algrithm.
     
     Usage:
-        odmd = OnlineDMD(n,forgetting)
+        odmd = OnlineDMD(n,weighting)
         odmd.initialize(Xq,Yq)
         odmd.initilizeghost()
         odmd.update(x,y)
@@ -24,7 +24,7 @@ class OnlineDMD:
             
     properties:
         n: state dimension
-        forgetting: forgetting factor between (0,1]
+        weighting: weighting factor between (0,1]
         timestep: number of snapshot pairs processed (i.e., the current time step)
         A: DMD matrix, size n by n
         P: Matrix that contains information about past snapshots, size n by n
@@ -49,13 +49,13 @@ class OnlineDMD:
     To import the OnlineDMD class, add import online at head of Python scripts.
     To look up this documentation, type help(online.OnlineDMD) or online.OnlineDMD?
     """
-    def __init__(self, n=0, forgetting=1, timestep=0, A=None, P=None):
+    def __init__(self, n=0, weighting=1, timestep=0, A=None, P=None):
         """
         Creat an object for online DMD
-        Usage: odmd = OnlineDMD(n,forgetting)
+        Usage: odmd = OnlineDMD(n,weighting)
             """
         self.n = n
-        self.forgetting = forgetting
+        self.weighting = weighting
         self.timestep = timestep
         if A is None or P is None:
             self.A = np.zeros([n,n])
@@ -71,13 +71,14 @@ class OnlineDMD:
         q = len(Xq[0,:])
         Xqhat, Yqhat = np.zeros(Xq.shape), np.zeros(Yq.shape)
         if self.timestep == 0 and self.n <= q:
-            sqrtlambda = np.sqrt(self.forgetting)
-            # multiply forgetting factor with snapshots
+            #weight = np.sqrt(self.weighting)**range(q-1,-1,-1)
+            sqrtlambda = np.sqrt(self.weighting)
+            # multiply weighting factor with snapshots
             for i in range(q):
                 Xqhat[:,i] = Xq[:,i]*sqrtlambda**(q-1-i)
                 Yqhat[:,i] = Yq[:,i]*sqrtlambda**(q-1-i)
             self.A = Yqhat.dot(np.linalg.pinv(Xqhat))
-            self.P = np.linalg.inv(Xqhat.dot(Xqhat.T))/self.forgetting
+            self.P = np.linalg.inv(Xqhat.dot(Xqhat.T))/self.weighting
             self.timestep += q
             
     def initializeghost(self):
@@ -102,7 +103,7 @@ class OnlineDMD:
         # update A
         self.A += np.outer(y-self.A.dot(x),gamma*Px)
         # update P
-        self.P = (self.P - np.outer(gamma*Px,Px))/self.forgetting
+        self.P = (self.P - np.outer(gamma*Px,Px))/self.weighting
         # time step + 1
         self.timestep += 1
 

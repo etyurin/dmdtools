@@ -4,12 +4,14 @@
 % 
 % Algorithm description:
 %       At time step k, define two matrix 
-%       Xk = [x(k-w+1),x(k-w+2),...,x(k)], Yk = [y(k-w+1),y(k-w+2),...,y(k)], 
+%       X(k) = [x(k-w+1),x(k-w+2),...,x(k)], Y(k) = [y(k-w+1),y(k-w+2),...,y(k)], 
 %       that contain the recent w snapshot pairs from a finite time window, 
 %       where x(k), y(k) are the n dimensional state vector, 
 %       y(k) = f(x(k)) is the image of x(k), f() is the dynamics. 
 %       Here, if the (discrete-time) dynamics are given by z(k) = f(z(k-1)), then x(k), y(k)
 %       should be measurements corresponding to consecutive states z(k-1) and z(k).
+%       At time step k+1, we need to forget old snapshot pair x(k-w+1), y(k-w+1), 
+%       and remember new snapshot pair xnew = x(k+1), ynew = y(k+1)
 %       We would like to update the DMD matrix Ak = Yk*pinv(Xk) recursively 
 %       by efficient rank-2 updating window DMD algorithm.
 %        
@@ -86,11 +88,12 @@ classdef WindowDMD < handle
             % Forget the oldest pair of snapshots (xold, yold), and remebers the newest
             % pair of snapshots (xnew, ynew) in the new time window. If the new finite
             % time window at time step k+1 includes recent w snapshot pairs as
-            % Xw = [x(k-w+2),x(k-w+3),...,x(k+1)], Yw = [y(k-w+2),y(k-w+3),...,y(k+1)],
+            % X(k+1) = [x(k-w+2),x(k-w+3),...,x(k+1)], Y(k+1) = [y(k-w+2),y(k-w+3),...,y(k+1)],
             % where y(k) = f(x(k)) and f is the dynamics, then we should take
             % xold = x(k-w+1), yold = y(k-w+1), xnew = x(k+1), ynew = y(k+1)
             % Usage: wdmd.update(xold, yold, xnew, ynew)
             
+            % Forget the oldest snapshot pair
             % compute Pk*xold matrix vector product beforehand
             Pkxold = obj.P*xold;
             % compute beta
@@ -100,6 +103,7 @@ classdef WindowDMD < handle
             % compute Pko
             Pko = obj.P + (beta*Pkxold)*Pkxold';
             
+            % Remember the newest snapshot pair
             % compute Pko*xnew matrix vector product beforehand
             Pkoxnew = Pko*xnew;
             % compute gamma

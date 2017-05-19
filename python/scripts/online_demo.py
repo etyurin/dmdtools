@@ -15,7 +15,7 @@ Batch DMD computes DMD matrix by brute-force taking the pseudo-inverse directly
 
 Online DMD computes the DMD matrix by using efficient rank-1 update idea
 
-We compare the performance of online DMD (with lambda=1,0.9) with the brute-force batch DMD
+We compare the performance of online DMD (with alpha=1,0.9) with the brute-force batch DMD
 approach in terms of tracking time varying eigenvalues, by comparison with the analytical solution
 
 Authors: 
@@ -89,7 +89,7 @@ end = time.clock()
 print "Batch DMD, time = " + str(end-start) + " secs"
 
 
-# Online DMD, forgetting = 1
+# Online DMD, weighting = 1
 q = 20
 evalsonlineDMD1 = np.empty((n,m),dtype=complex)
 odmd = dmdtools.OnlineDMD(n,1.0)
@@ -99,10 +99,10 @@ for k in range(q,m):
     odmd.update(x[:,k],y[:,k])
     evalsonlineDMD1[:,k] = np.log(np.linalg.eigvals(odmd.A))/dt
 end = time.clock()
-print "Online DMD, forgetting = 1, time = " + str(end-start) + " secs"
+print "Online DMD, weighting = 1, time = " + str(end-start) + " secs"
 
 
-# Online DMD, forgetting = 0.9
+# Online DMD, weighting = 0.9
 q = 20
 evalsonlineDMD09 = np.empty((n,m),dtype=complex)
 odmd = dmdtools.OnlineDMD(n,0.9)
@@ -112,17 +112,17 @@ for k in range(q,m):
     odmd.update(x[:,k],y[:,k])
     evalsonlineDMD09[:,k] = np.log(np.linalg.eigvals(odmd.A))/dt
 end = time.clock()
-print "Online DMD, forgetting = 0.9, time = " + str(end-start) + " secs"
+print "Online DMD, weighting = 0.9, time = " + str(end-start) + " secs"
 
 
-# visualize true, batch, online (forgettting=1,0.9)
+# visualize true, batch, online (weighting=1,0.9)
 plt.figure()
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 plt.plot(t, np.imag(evals[0,:]), 'k-',label='true',linewidth=2.0)
 plt.plot(t[q:], np.imag(evalsbatchDMD[0,q:]), 'r-',label='batch',linewidth=2.0)
-plt.plot(t[q:], np.imag(evalsonlineDMD1[0,q:]), 'g--',label='online, $\lambda$=1',linewidth=2.0)
-plt.plot(t[q:], np.imag(evalsonlineDMD09[0,q:]), 'b-',label='online, $\lambda$=0.9',linewidth=2.0)
+plt.plot(t[q:], np.imag(evalsonlineDMD1[0,q:]), 'g--',label='online, weighting=1',linewidth=2.0)
+plt.plot(t[q:], np.imag(evalsonlineDMD09[0,q:]), 'b-',label='online, weighting=0.9',linewidth=2.0)
 plt.tick_params(labelsize=20)
 plt.xlabel('Time', fontsize=20)
 plt.ylabel('Im', fontsize=20)

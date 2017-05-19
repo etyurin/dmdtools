@@ -14,6 +14,8 @@ class WindowDMD:
         y(k) = f(x(k)) is the image of x(k), f() is the dynamics. 
         Here, if the (discrete-time) dynamics are given by z(k) = f(z(k-1)), then x(k), y(k)
         should be measurements correponding to consecutive states z(k-1) and z(k).
+        At time k+1, we need to forget the old snapshot pair xold = x(k-w+1), yold = y(k-w+1), 
+        and remember the new snapshot pair xnew = x(k+1), ynew = y(k+1)
         We would like to update the DMD matrix Ak = Yk*pinv(Xk) recursively 
         by efficient rank-2 updating window DMD algrithm.
         
@@ -84,6 +86,7 @@ class WindowDMD:
         xold = x(k-w+1), yold = y(k-w+1), xnew = x(k+1), ynew = y(k+1)
         Usage: wdmd.update(xold, yold, xnew, ynew)
         """
+        # Forget the oldest snapshot pair
         # compute Pkxold matrix vector product beforehand
         Pkxold = self.P.dot(xold)
         # compute beta
@@ -93,6 +96,7 @@ class WindowDMD:
         # compute Pko
         Pko = self.P + np.outer(beta*Pkxold, Pkxold)
         
+        # Remember the newest snapshot pair
         # compute Pko*xnew matrix vector product beforehand
         Pkoxnew = Pko.dot(xnew)
         # compute gamma

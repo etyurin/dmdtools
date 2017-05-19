@@ -71,12 +71,8 @@ class OnlineDMD:
         q = len(Xq[0,:])
         Xqhat, Yqhat = np.zeros(Xq.shape), np.zeros(Yq.shape)
         if self.timestep == 0 and self.n <= q:
-            #weight = np.sqrt(self.weighting)**range(q-1,-1,-1)
-            sqrtlambda = np.sqrt(self.weighting)
-            # multiply weighting factor with snapshots
-            for i in range(q):
-                Xqhat[:,i] = Xq[:,i]*sqrtlambda**(q-1-i)
-                Yqhat[:,i] = Yq[:,i]*sqrtlambda**(q-1-i)
+            weight = np.sqrt(self.weighting)**range(q-1,-1,-1)
+            Xqhat, Yqhat = weight*Xq, weight*Yq
             self.A = Yqhat.dot(np.linalg.pinv(Xqhat))
             self.P = np.linalg.inv(Xqhat.dot(Xqhat.T))/self.weighting
             self.timestep += q

@@ -85,7 +85,7 @@ AminibatchDMD = np.empty((n,n,m))
 evalsminibatchDMD = np.empty((n,m),dtype=complex)
 start = time.clock()
 for k in range(w,m):
-    AminibatchDMD[:,:,k] = y[:,k-w:k].dot(np.linalg.pinv(x[:,k-w:k]))
+    AminibatchDMD[:,:,k] = y[:,k-w+1:k+1].dot(np.linalg.pinv(x[:,k-w+1:k+1]))
     evalsminibatchDMD[:,k] = np.log(np.linalg.eigvals(AminibatchDMD[:,:,k]))/dt
 end = time.clock()
 print "Mini-batch DMD, time = " + str(end-start) + " secs"
@@ -104,7 +104,7 @@ end = time.clock()
 print "Window DMD, time = " + str(end-start) + " secs"
 
 
-# visualize true, batch, window (forgettting=1,0.9)
+# visualize true, batch, window
 plt.figure()
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')

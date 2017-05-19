@@ -44,7 +44,7 @@ class WindowDMD:
     References:
         Hao Zhang, Clarence W. Rowley, Eric A. Deem, and Louis N. Cattafesta,
         ``Online Dynamic Mode Decomposition for Time-varying Systems",  
-        in production, 2017. To be submitted for publication, available on arXiv.
+        in production, 2017. Available on arXiv.
     
     Date created: April 2017
     
@@ -86,25 +86,20 @@ class WindowDMD:
         xold = x(k-w+1), yold = y(k-w+1), xnew = x(k+1), ynew = y(k+1)
         Usage: wdmd.update(xold, yold, xnew, ynew)
         """
-        # Forget the oldest snapshot pair
-        # compute Pkxold matrix vector product beforehand
-        Pkxold = self.P.dot(xold)
-        # compute beta
-        beta = 1.0/(1-xold.T.dot(Pkxold))
-        # compute Ako
-        Ako = self.A + np.outer(beta*(-yold+self.A.dot(xold)),Pkxold)
-        # compute Pko
-        Pko = self.P + np.outer(beta*Pkxold, Pkxold)
-        
-        # Remember the newest snapshot pair
-        # compute Pko*xnew matrix vector product beforehand
-        Pkoxnew = Pko.dot(xnew)
-        # compute gamma
-        gamma = 1.0/(1+xnew.T.dot(Pkoxnew))
-        # update Ak
-        self.A = Ako + np.outer(gamma*(ynew-Ako.dot(xnew)),Pkoxnew)
-        # update Pk
-        self.P = Pko - np.outer(gamma*Pkoxnew, Pkoxnew)
+        # direct rank-2 update
+        # define matrices
+        U, V = np.column_stack((xold, xnew)), np.column_stack((yold, ynew))
+        C = np.diag([-1,1])
+        # compute PkU matrix vector product beforehand
+        PkU = self.P.dot(U)
+        # compute AkU matrix vector product beforehand
+        AkU = self.A.dot(U)
+        # compute Gamma
+        Gamma = np.linalg.inv(C+U.T.dot(PkU))
+        # update A
+        self.A += (V-AkU).dot(Gamma).dot(PkU.T)
+        # update P
+        self.P += -PkU.dot(Gamma).dot(PkU.T)
         
         # time step + 1
         self.timestep += 1

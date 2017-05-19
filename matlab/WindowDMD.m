@@ -43,7 +43,7 @@
 % Reference:
 % Hao Zhang, Clarence W. Rowley, Eric A. Deem, and Louis N. Cattafesta,
 % ``Online Dynamic Mode Decomposition for Time-varying Systems", 
-% in production, 2017. To be submitted for publication, available on arXiv.
+% in production, 2017. Available on arXiv.
 % 
 % Created:
 %   April 2017.
@@ -93,25 +93,19 @@ classdef WindowDMD < handle
             % xold = x(k-w+1), yold = y(k-w+1), xnew = x(k+1), ynew = y(k+1)
             % Usage: wdmd.update(xold, yold, xnew, ynew)
             
-            % Forget the oldest snapshot pair
-            % compute Pk*xold matrix vector product beforehand
-            Pkxold = obj.P*xold;
-            % compute beta
-            beta = 1/(1-xold'*Pkxold);
-            % compute Ako
-            Ako = obj.A + (beta*(-yold+obj.A*xold))*Pkxold';
-            % compute Pko
-            Pko = obj.P + (beta*Pkxold)*Pkxold';
-            
-            % Remember the newest snapshot pair
-            % compute Pko*xnew matrix vector product beforehand
-            Pkoxnew = Pko*xnew;
-            % compute gamma
-            gamma = 1/(1+xnew'*Pkoxnew);
+            % direct rank-2 update
+            % define matrices
+            U = [xold, xnew]; V = [yold, ynew]; C = [-1,0;0,1];
+            % compute PkU matrix vector product beforehand
+            PkU = obj.P*U;
+            % compute AkU matrix vector product beforehand
+            AkU = obj.A*U;
+            % compute Gamma
+            Gamma = inv(C+U'*PkU);
             % update A
-            obj.A = Ako + (gamma*(ynew - Ako*xnew))*Pkoxnew';
+            obj.A = obj.A + (V-AkU)*(Gamma*PkU');
             % update P
-            obj.P = Pko - (gamma*Pkoxnew)*Pkoxnew';
+            obj.P = obj.P - PkU*(Gamma*PkU');
             
             % time step + 1
             obj.timestep = obj.timestep + 1;

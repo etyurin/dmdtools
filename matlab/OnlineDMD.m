@@ -13,7 +13,7 @@
 %       by efficient rank-1 updating online DMD algorithm.
 %
 % Usage:
-%       odmd = OnlineDMD(n,alpha)
+%       odmd = OnlineDMD(n,weighting)
 %       odmd.initialize(Xq,Yq)
 %       odmd.initilizeghost()
 %       odmd.update(x,y)
@@ -21,7 +21,7 @@
 %        
 % properties:
 %       n: state dimension
-%       alpha: weighting factor between 0 and 1
+%       weighting: weighting factor between 0 and 1
 %       timestep: number of snapshot pairs processed
 %       A: DMD matrix, size n by n
 %       P: matrix that contains information about past snapshots, size n by n
@@ -42,7 +42,7 @@
 % Reference:
 % Hao Zhang, Clarence W. Rowley, Eric A. Deem, and Louis N. Cattafesta,
 % ``Online Dynamic Mode Decomposition for Time-varying Systems", 
-% in production, 2017. To be submitted for publication, available on arXiv.
+% in production, 2017. Available on arXiv.
 % 
 % Created:
 %   April 2017.
@@ -52,19 +52,19 @@
 classdef OnlineDMD < handle
     properties
         n = 0;                      % state dimension
-        alpha = 1;                 % weighting factor
+        weighting = 1;                 % weighting factor
         timestep = 0;               % number of snapshots processed
         A;          % DMD matrix
         P;          % matrix that contains information about past snapshots
     end
     
     methods
-        function obj = OnlineDMD(n,alpha)
+        function obj = OnlineDMD(n,weighting)
             % Creat an object for online DMD
-            % Usage: odmd = OnlineDMD(n,alpha)
+            % Usage: odmd = OnlineDMD(n,weighting)
             if nargin == 2
                 obj.n = n;
-                obj.alpha = alpha;
+                obj.weighting = weighting;
                 obj.A = zeros(n,n);
                 obj.P = zeros(n,n);
             end
@@ -75,11 +75,11 @@ classdef OnlineDMD < handle
             % Usage: odmd.initialize(Xq,Yq)
             q = length(Xq(1,:));
             if(obj.timestep == 0 && q>=obj.n)
-                weight = (sqrt(obj.alpha)).^(q-1:-1:0);
+                weight = (sqrt(obj.weighting)).^(q-1:-1:0);
                 Xq = Xq.*weight;
                 Yq = Yq.*weight;
                 obj.A = Yq*pinv(Xq);
-                obj.P = inv(Xq*Xq')/obj.alpha;
+                obj.P = inv(Xq*Xq')/obj.weighting;
             end
             obj.timestep = obj.timestep + q;
         end
@@ -87,8 +87,9 @@ classdef OnlineDMD < handle
         function initializeghost(obj)
             % Initialize online DMD with epsilon small (1e-15) ghost snapshot pairs before t=0
             % Usage: odmd.initilizeghost()
+            epsilon = 1e-15;
             obj.A = randn(obj.n, obj.n);
-            obj.P = (1/eps)*eye(obj.n);
+            obj.P = (1/epsilon)*eye(obj.n);
         end
         
         function update(obj, x, y)
@@ -104,7 +105,7 @@ classdef OnlineDMD < handle
             % Update A
             obj.A = obj.A + (gamma*(y-obj.A*x))*Px';
             % Update P
-            obj.P = (obj.P - (gamma*Px)*Px')/obj.alpha;
+            obj.P = (obj.P - (gamma*Px)*Px')/obj.weighting;
             % time step + 1
             obj.timestep = obj.timestep + 1;
         end

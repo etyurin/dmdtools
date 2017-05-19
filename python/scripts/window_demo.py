@@ -19,6 +19,7 @@ Window DMD computes the DMD matrix by using efficient rank-2 update idea
 
 We compare the performance of window DMD with the brute-force mini-batch DMD
 approach in terms of tracking time varying eigenvalues, by comparison with the analytical solution
+They should agree with each other (up to machine round-offer errors)
     
 Authors: 
     Hao Zhang
@@ -27,7 +28,7 @@ Authors:
 References:
     Hao Zhang, Clarence W. Rowley, Eric A. Deem, and Louis N. Cattafesta,
     ``Online Dynamic Mode Decomposition for Time-varying Systems",  
-    in production, 2017. To be submitted for publication, available on arXiv.
+    in production, 2017. Available on arXiv.
         
 Date created: April 2017
 """
@@ -108,13 +109,12 @@ print "Window DMD, time = " + str(end-start) + " secs"
 plt.figure()
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
-plt.plot(t, np.imag(evals[0,:]), 'k-',label='true',linewidth=2.0)
-plt.plot(t[w:], np.imag(evalsminibatchDMD[0,w:]), 'r-',label='mini-batch, w=20',linewidth=2.0)
-plt.plot(t[w:], np.imag(evalswindowDMD[0,w:]), 'g--',label='window, w=20',linewidth=2.0)
+plt.plot(t, np.imag(evals[0,:]), 'k-',label='True',linewidth=2.0)
+plt.plot(t[w:], np.imag(evalsminibatchDMD[0,w:]), 'r-',label='Mini-batch, w=20',linewidth=2.0)
+plt.plot(t[w:], np.imag(evalswindowDMD[0,w:]), 'g--',label='Window, w=20',linewidth=2.0)
 plt.tick_params(labelsize=20)
 plt.xlabel('Time', fontsize=20)
-plt.ylabel('Im', fontsize=20)
-plt.title('Imignary part of eigenvalues', fontsize=20)
+plt.ylabel('Im($\lambda_{DMD}$)', fontsize=20)
 plt.legend(loc='best', fontsize=20, shadow=True)
 plt.xlim([0,10])
 plt.ylim([1,2])

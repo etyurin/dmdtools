@@ -14,10 +14,9 @@
 % Batch DMD computes DMD matrix by brute-force taking the pseudo-inverse directly
 % 
 % Online DMD computes the DMD matrix by using efficient rank-1 update idea
-% 
 % We compare the performance of online DMD (with alpha=1,0.9) with the brute-force batch DMD
 % approach in terms of tracking time varying eigenvalues, by comparison with the analytical solution
-% 
+% Online DMD (weighting=1) and batch DMD should agree with each other (up to machine round-offer errors)
 % Authors: 
 %   Hao Zhang
 %   Clarence W. Rowley
@@ -25,7 +24,7 @@
 % Reference:
 % Hao Zhang, Clarence W. Rowley, Eric A. Deem, and Louis N. Cattafesta,
 % ``Online Dynamic Mode Decomposition for Time-varying Systems", 
-% in production, 2017. To be submitted for publication, available on arXiv.
+% in production, 2017. Available on arXiv.
 % 
 % Date created: April 2017
 
@@ -75,7 +74,7 @@ end
 elapsed_time = toc;
 fprintf('Batch DMD, elapsed time: %f seconds\n', elapsed_time)
 
-% Online DMD alpha = 1
+% Online DMD weighting = 1
 q = 20;
 evalsonlineDMD1 = zeros(n,m);
 % creat object and initialize with first q snapshot pairs
@@ -88,9 +87,9 @@ for k = q+1:m
     evalsonlineDMD1(:,k) = log(eig(odmd.A))/dt;
 end
 elapsed_time = toc;
-fprintf('Online DMD, alpha = 1, elapsed time: %f seconds\n', elapsed_time)
+fprintf('Online DMD, weighting = 1, elapsed time: %f seconds\n', elapsed_time)
 
-% Online DMD, alpha = 0.9
+% Online DMD, weighting = 0.9
 q = 20;
 evalsonlineDMD09 = zeros(n,m);
 % creat object and initialize with first q snapshot pairs
@@ -103,20 +102,19 @@ for k = q+1:m
     evalsonlineDMD09(:,k) = log(eig(odmd.A))/dt;
 end
 elapsed_time = toc;
-fprintf('Online DMD, alpha = 0.9, elapsed time: %f seconds\n', elapsed_time)
+fprintf('Online DMD, weighting = 0.9, elapsed time: %f seconds\n', elapsed_time)
 
 
 % visualize imaginary part of the continous time eigenvalues
-% from true, batch, online (alpha=1), and online (alpha=0.9)
+% from true, batch, online (rho=1), and online (rho=0.9)
 updateindex = q+1:m;
 figure, hold on
 plot(t,imag(evals(1,:)),'k-','LineWidth',2)
 plot(t(updateindex),imag(evalsbatchDMD(1,updateindex)),'-','LineWidth',2)
 plot(t(updateindex),imag(evalsonlineDMD1(1,updateindex)),'--','LineWidth',2)
 plot(t(updateindex),imag(evalsonlineDMD09(1,updateindex)),'-','LineWidth',2)
-xlabel('Time','Interpreter','latex'), ylabel('Im','Interpreter','latex')
-title('Imaginary part of eigenvalues','Interpreter','latex')
-fl = legend('True','batch','online, $\alpha=1$','online, $\alpha=0.9$');
+xlabel('Time','Interpreter','latex'), ylabel('Im($\lambda_{DMD}$)','Interpreter','latex')
+fl = legend('True','Batch','Online, $wf=1$','Online, $wf=0.9$');
 set(fl,'Interpreter','latex','Location','northwest');
 ylim([1,2]), xlim([0,10])
 box on

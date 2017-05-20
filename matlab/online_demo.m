@@ -32,15 +32,13 @@
 epsilon = 1e-1;
 dyn = @(t,x) ([0, 1+epsilon*t; -(1+epsilon*t),0])*x;
 % generate data
-tspan = [0 10];
-x0 = [1;0];
-[t,x] = ode45(dyn, tspan, x0);
-% interpolate uniform time step
 dt = 1e-1;
-time = 0:dt:max(tspan);
-xq = interp1(t,x,time); xq = xq';
+tspan = 0:dt:10;
+x0 = [1;0];
+[tq,xq] = ode45(dyn, tspan, x0);
 % extract snapshot pairs
-x = xq(:,1:end-1); y = xq(:,2:end); t = time(2:end);
+xq = xq'; tq = tq';
+x = xq(:,1:end-1); y = xq(:,2:end); t = tq(2:end);
 % true dynamics, eigenvalues
 [n, m] = size(x);
 A = zeros(n,n,m);
@@ -63,7 +61,7 @@ set(gca,'FontSize',20,'LineWidth',2)
 
 
 % batch DMD
-q = 20;
+q = 10;
 AbatchDMD = zeros(n,n,m);
 evalsbatchDMD = zeros(n,m);
 tic
@@ -75,7 +73,6 @@ elapsed_time = toc;
 fprintf('Batch DMD, elapsed time: %f seconds\n', elapsed_time)
 
 % Online DMD weighting = 1
-q = 20;
 evalsonlineDMD1 = zeros(n,m);
 % creat object and initialize with first q snapshot pairs
 odmd = OnlineDMD(n,1);
@@ -90,7 +87,6 @@ elapsed_time = toc;
 fprintf('Online DMD, weighting = 1, elapsed time: %f seconds\n', elapsed_time)
 
 % Online DMD, weighting = 0.9
-q = 20;
 evalsonlineDMD09 = zeros(n,m);
 % creat object and initialize with first q snapshot pairs
 odmd = OnlineDMD(n,0.9);

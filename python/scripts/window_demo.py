@@ -55,6 +55,7 @@ tspan = np.linspace(0,10,101)
 dt = 0.1
 x0 = [1,0]
 xsol = odeint(dyn,x0,tspan).T
+# extract snapshots
 x, y = xsol[:,:-1], xsol[:,1:]
 t = tspan[:-1]
 # true dynamics, true eigenvalues
@@ -80,8 +81,8 @@ plt.grid()
 plt.show()
 
 
-# mini-batch DMD, w = 20
-w = 20
+# mini-batch DMD, w = 10
+w = 10
 AminibatchDMD = np.empty((n,n,m))
 evalsminibatchDMD = np.empty((n,m),dtype=complex)
 start = time.clock()
@@ -92,8 +93,7 @@ end = time.clock()
 print "Mini-batch DMD, time = " + str(end-start) + " secs"
 
 
-# Window DMD, w = 20
-w = 20
+# Window DMD, w = 10
 evalswindowDMD = np.empty((n,m),dtype=complex)
 wdmd = dmdtools.WindowDMD(n,w)
 wdmd.initialize(x[:,:w],y[:,:w])
@@ -110,8 +110,8 @@ plt.figure()
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 plt.plot(t, np.imag(evals[0,:]), 'k-',label='True',linewidth=2.0)
-plt.plot(t[w:], np.imag(evalsminibatchDMD[0,w:]), 'r-',label='Mini-batch, $w=20$',linewidth=2.0)
-plt.plot(t[w:], np.imag(evalswindowDMD[0,w:]), 'g--',label='Window, $w=20$',linewidth=2.0)
+plt.plot(t[w:], np.imag(evalsminibatchDMD[0,w:]), 'r-',label='Mini-batch, $w=10$',linewidth=2.0)
+plt.plot(t[w:], np.imag(evalswindowDMD[0,w:]), 'g--',label='Window, $w=10$',linewidth=2.0)
 plt.tick_params(labelsize=20)
 plt.xlabel('Time', fontsize=20)
 plt.ylabel('Im($\lambda_{DMD}$)', fontsize=20)

@@ -42,20 +42,20 @@ x0 = [1;0];
 [tq,xq] = ode45(dyn, tspan, x0);
 % extract snapshot pairs
 xq = xq'; tq = tq';
-x = xq(:,1:end-1); y = xq(:,2:end); t = tq(2:end);
+x = xq(:,1:end-1); y = xq(:,2:end); time = tq(2:end);
 % true dynamics, eigenvalues
 [n, m] = size(x);
 A = zeros(n,n,m);
 evals = zeros(n,m);
 for k = 1:m
-    A(:,:,k) = [0, 1+epsilon*t(k); -(1+epsilon*t(k)),0]; % continuous time dynamics
+    A(:,:,k) = [0, 1+epsilon*time(k); -(1+epsilon*time(k)),0]; % continuous time dynamics
     evals(:,k) = eig(A(:,:,k)); % analytical continuous time eigenvalues
 end
 
 
 % visualize snapshots
 figure, hold on
-plot(time,xq(1,:),'x-',time,xq(2,:),'o-','LineWidth',2)
+plot(tq,xq(1,:),'x-',tq,xq(2,:),'o-','LineWidth',2)
 xlabel('Time','Interpreter','latex')
 title('Snapshots','Interpreter','latex')
 fl = legend('$x_1(t)$','$x_2(t)$');
@@ -97,9 +97,9 @@ fprintf('Window DMD, elapsed time: %f seconds\n', elapsed_time)
 % from true, mini-batch, and window
 updateindex = w+1:m;
 figure, hold on
-plot(t,imag(evals(1,:)),'k-','LineWidth',2)
-plot(t(updateindex),imag(evalsminibatchDMD(1,updateindex)),'-','LineWidth',2)
-plot(t(updateindex),imag(evalswindowDMD(1,updateindex)),'--','LineWidth',2)
+plot(time,imag(evals(1,:)),'k-','LineWidth',2)
+plot(time(updateindex),imag(evalsminibatchDMD(1,updateindex)),'-','LineWidth',2)
+plot(time(updateindex),imag(evalswindowDMD(1,updateindex)),'--','LineWidth',2)
 xlabel('Time','Interpreter','latex'), ylabel('Im($\lambda_{DMD}$)','Interpreter','latex')
 fl = legend('True','Mini-batch, $w=10$','Window, $w=10$');
 set(fl,'Interpreter','latex','Location','northwest');

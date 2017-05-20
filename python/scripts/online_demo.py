@@ -55,7 +55,7 @@ x0 = [1,0]
 xsol = odeint(dyn,x0,tspan).T
 # extract snapshots
 x, y = xsol[:,:-1], xsol[:,1:]
-t = tspan[:-1]
+t = tspan[1:]
 # true dynamics, true eigenvalues
 n, m = len(x[:,0]), len(x[0,:])
 A = np.empty((n,n,m))

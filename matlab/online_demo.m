@@ -38,20 +38,20 @@ x0 = [1;0];
 [tq,xq] = ode45(dyn, tspan, x0);
 % extract snapshot pairs
 xq = xq'; tq = tq';
-x = xq(:,1:end-1); y = xq(:,2:end); t = tq(2:end);
+x = xq(:,1:end-1); y = xq(:,2:end); time = tq(2:end);
 % true dynamics, eigenvalues
 [n, m] = size(x);
 A = zeros(n,n,m);
 evals = zeros(n,m);
 for k = 1:m
-    A(:,:,k) = [0, 1+epsilon*t(k); -(1+epsilon*t(k)),0]; % continuous time dynamics
+    A(:,:,k) = [0, 1+epsilon*time(k); -(1+epsilon*time(k)),0]; % continuous time dynamics
     evals(:,k) = eig(A(:,:,k)); % analytical continuous time eigenvalues
 end
 
 
 % visualize snapshots
 figure, hold on
-plot(time,xq(1,:),'x-',time,xq(2,:),'o-','LineWidth',2)
+plot(tq,xq(1,:),'x-',tq,xq(2,:),'o-','LineWidth',2)
 xlabel('Time','Interpreter','latex')
 title('Snapshots','Interpreter','latex')
 fl = legend('$x_1(t)$','$x_2(t)$');
@@ -105,10 +105,10 @@ fprintf('Online DMD, weighting = 0.9, elapsed time: %f seconds\n', elapsed_time)
 % from true, batch, online (rho=1), and online (rho=0.9)
 updateindex = q+1:m;
 figure, hold on
-plot(t,imag(evals(1,:)),'k-','LineWidth',2)
-plot(t(updateindex),imag(evalsbatchDMD(1,updateindex)),'-','LineWidth',2)
-plot(t(updateindex),imag(evalsonlineDMD1(1,updateindex)),'--','LineWidth',2)
-plot(t(updateindex),imag(evalsonlineDMD09(1,updateindex)),'-','LineWidth',2)
+plot(time,imag(evals(1,:)),'k-','LineWidth',2)
+plot(time(updateindex),imag(evalsbatchDMD(1,updateindex)),'-','LineWidth',2)
+plot(time(updateindex),imag(evalsonlineDMD1(1,updateindex)),'--','LineWidth',2)
+plot(time(updateindex),imag(evalsonlineDMD09(1,updateindex)),'-','LineWidth',2)
 xlabel('Time','Interpreter','latex'), ylabel('Im($\lambda_{DMD}$)','Interpreter','latex')
 fl = legend('True','Batch','Online, $wf=1$','Online, $wf=0.9$');
 set(fl,'Interpreter','latex','Location','northwest');

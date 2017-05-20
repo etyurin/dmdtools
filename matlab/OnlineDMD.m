@@ -105,7 +105,7 @@ classdef OnlineDMD < handle
             % Update A
             obj.A = obj.A + (gamma*(y-obj.A*x))*Px';
             % Update P
-            obj.P = (obj.P - (gamma*Px)*Px')/obj.weighting;
+            obj.P = (obj.P - gamma*(Px*Px'))/obj.weighting;
             % time step + 1
             obj.timestep = obj.timestep + 1;
         end

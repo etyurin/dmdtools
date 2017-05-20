@@ -104,7 +104,7 @@ classdef OnlineDMD < handle
             gamma = 1/(1+x'*Px);
             % Update A
             obj.A = obj.A + (gamma*(y-obj.A*x))*Px';
-            % Update P
+            % Update P, Px*Px' to ensure positive definite
             obj.P = (obj.P - gamma*(Px*Px'))/obj.weighting;
             % time step + 1
             obj.timestep = obj.timestep + 1;

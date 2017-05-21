@@ -100,6 +100,8 @@ class WindowDMD:
         self.A += (V-AkU).dot(Gamma).dot(PkU.T)
         # update P
         self.P += -PkU.dot(Gamma).dot(PkU.T)
+        # ensure P is SPD by taking its symmetric part
+        self.P = (self.P + self.P.T)/2
         
         # time step + 1
         self.timestep += 1

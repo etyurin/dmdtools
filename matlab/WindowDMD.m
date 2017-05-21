@@ -106,6 +106,8 @@ classdef WindowDMD < handle
             obj.A = obj.A + (V-AkU)*(Gamma*PkU');
             % update P
             obj.P = obj.P - PkU*(Gamma*PkU');
+            % ensure P is SPD by taking its symmetric part
+            obj.P = (obj.P+(obj.P)')/2;
             
             % time step + 1
             obj.timestep = obj.timestep + 1;

@@ -95,7 +95,7 @@ classdef WindowDMD < handle
             
             % direct rank-2 update
             % define matrices
-            U = [xold, xnew]; V = [yold, ynew]; C = [-1,0;0,1];
+            U = [xold, xnew]; V = [yold, ynew]; C = diag([-1,1]);
             % compute PkU matrix vector product beforehand
             PkU = obj.P*U;
             % compute AkU matrix vector product beforehand

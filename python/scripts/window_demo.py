@@ -82,7 +82,7 @@ plt.show()
 
 
 # mini-batch DMD, w = 10
-w = 3
+w = 10
 AminibatchDMD = np.empty((n,n,m))
 evalsminibatchDMD = np.empty((n,m),dtype=complex)
 start = time.clock()

@@ -4,7 +4,7 @@ import numpy as np
 
 class OnlineDMD:
     """OnlineDMD is a class that implements online dynamic mode decomposition
-    The time complexity (multiply–add operation for one iteration) is O(n^2), and space complexity is 
+    The time complexity (multiply-add operation for one iteration) is O(n^2), and space complexity is 
     O(n^2), where n is the state dimension.
     
     Algorithm description:
